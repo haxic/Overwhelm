@@ -50,9 +50,13 @@ public class DirectionalMovementSystem {
       tempMovementVector.fma(horizontal * delta * 0.01f, horizontalVector);
       tempMovementVector.add(0, 0, vertical * delta * 0.01f);
 
-      direction.rotateAroundZAxis(yaw * 0.01f);
-      direction.rotateAroundRightAxis(pitch * 0.01f);
+      //      direction.rotateAroundZAxis(yaw * 0.01f);
+      //      direction.rotateAroundRightAxis(pitch * 0.01f);
+
+      direction.rotate(pitch * 0.01f, yaw * 0.01f, 0f);
+
       position.setPosition(tempPosition.add(tempMovementVector));
+
       // Reset directional movement
       directionalMovement.reset();
     }

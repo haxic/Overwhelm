@@ -33,19 +33,17 @@ public class EntityRenderer {
 
   public void render(
       EntityManager entityManager,
-      List<Entity> lights,
       Map<Model, List<Entity>> entities,
       Vector3f cameraPosition,
       Matrix4f projectionMatrix,
       Matrix4f viewMatrix) {
     this.entityManager = Objects.requireNonNull(entityManager);
-    Objects.requireNonNull(lights);
     Objects.requireNonNull(entities);
     Objects.requireNonNull(cameraPosition);
     Objects.requireNonNull(projectionMatrix);
     Objects.requireNonNull(viewMatrix);
 
-    prepareEntityShader(cameraPosition, projectionMatrix, viewMatrix, lights);
+    prepareShader();
     for (Model model : entities.keySet()) {
       prepareModel(model);
       List<Entity> batch = entities.get(model);
@@ -60,14 +58,8 @@ public class EntityRenderer {
     entityShader.stop();
   }
 
-  private void prepareEntityShader(
-      Vector3f position, Matrix4f projectionMatrix, Matrix4f viewMatrix, List<Entity> lights) {
+  private void prepareShader() {
     entityShader.start();
-    //    entityShader.loadCameraPosition(position);
-    //    entityShader.loadProjectionMatrix(projectionMatrix);
-    //    entityShader.loadViewMatrix(viewMatrix);
-    //    entityShader.loadAmbientLight(0);
-    //    entityShader.loadLights(entityManager, lights);
   }
 
   private void prepareModel(Model model) {
@@ -88,10 +80,7 @@ public class EntityRenderer {
 
     Matrix4f mvpMatrix = MatrixFactory.createMVPMatrix(projectionMatrix, viewMatrix, modelMatrix);
 
-    //    Matrix4f modelViewMatrix = viewMatrix.mul(modelMatrix, new Matrix4f());
     entityShader.loadModelViewProjectionMatrix(mvpMatrix);
-    //    entityShader.loadModelViewMatrix(modelViewMatrix);
-    //    entityShader.loadModelMatrix(modelMatrix);
   }
 
   private void unbindModel() {
@@ -103,10 +92,6 @@ public class EntityRenderer {
 
   public void cleanUp() {
     // Clean up shader.
-    debugLog.debug("Entity renderer clean up successful.");
-  }
-
-  public void initialize() {
-    entityShader.initialize();
+    debugLog.info("Entity renderer clean up successful.");
   }
 }

@@ -9,5 +9,7 @@ public interface DebugLog {
 
   void debug(String message);
 
+  void info(String message);
+
   PrintStream getPrintStream();
 }

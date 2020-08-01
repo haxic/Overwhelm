@@ -2,12 +2,14 @@ package com.randominc.client.system;
 
 import com.randominc.client.component.Camera;
 import com.randominc.client.component.DirectionalMovement;
-import com.randominc.client.engine.core.GameEngine;
+import com.randominc.client.engine.core.GameController;
 import com.randominc.client.engine.window.KeyState;
 import com.randominc.client.engine.window.WindowInputProvider;
 import com.randominc.client.game.camera.CameraFreeLookAction;
 import com.randominc.client.game.control.Binding;
 import com.randominc.client.game.control.ControllerType;
+import com.randominc.shared.debug.DebugLog;
+import com.randominc.shared.debug.DefaultDebugLogProvider;
 import com.randominc.shared.hecs.Entity;
 import com.randominc.shared.hecs.EntityManager;
 import java.util.EnumMap;
@@ -20,25 +22,25 @@ import org.lwjgl.glfw.GLFW;
 public class CameraFreeLookControlSystem {
   private final EntityManager entityManager;
   private final WindowInputProvider windowInputProvider;
-  private final GameEngine gameEngine;
+  private final GameController gameController;
   private final EnumMap<CameraFreeLookAction, Binding> bindings;
   private static final Vector3i tempDirection = new Vector3i();
   private static final Vector3f tempRotation = new Vector3f();
-  private final Vector2f center;
-  private final Vector2f cursorOffset;
-  private final Vector2f currentCursorPosition;
+  private final Vector2f cursorDelta;
+  private final DebugLog debugLog;
   private boolean inverseMouseYAxis;
   private float horizontalMouseSpeed;
   private float verticalMouseSpeed;
 
   public CameraFreeLookControlSystem(
-      EntityManager entityManager, WindowInputProvider windowInputProvider, GameEngine gameEngine) {
+      EntityManager entityManager,
+      WindowInputProvider windowInputProvider,
+      GameController gameController) {
     this.entityManager = Objects.requireNonNull(entityManager);
     this.windowInputProvider = Objects.requireNonNull(windowInputProvider);
-    this.gameEngine = Objects.requireNonNull(gameEngine);
-    center = new Vector2f();
-    currentCursorPosition = new Vector2f();
-    cursorOffset = new Vector2f();
+    this.gameController = Objects.requireNonNull(gameController);
+    debugLog = new DefaultDebugLogProvider().getDebugLog(this);
+    cursorDelta = new Vector2f();
     bindings = new EnumMap<>(CameraFreeLookAction.class);
 
     setMoveForward(ControllerType.KEY, GLFW.GLFW_KEY_W);
@@ -160,29 +162,27 @@ public class CameraFreeLookControlSystem {
           }
         });
 
-    if (!gameEngine.isCursorShown()) {
-      gameEngine.getCenter(center);
-      windowInputProvider.getCursorPosition(currentCursorPosition);
-      center.sub(currentCursorPosition, cursorOffset);
+    if (!gameController.isCursorShown()) {
+      windowInputProvider.getCursorDelta(cursorDelta);
 
-      float mouseYOffset =
-          (inverseMouseYAxis ? -cursorOffset.y() : cursorOffset.y()) * verticalMouseSpeed;
-      float mouseXOffset = cursorOffset.x() * horizontalMouseSpeed;
+      //      float mouseYOffset =
+      //          (inverseMouseYAxis ? -cursorDelta.y() : cursorDelta.y()) * verticalMouseSpeed;
+      float mouseYOffset = cursorDelta.y() * verticalMouseSpeed;
+      float mouseXOffset = -cursorDelta.x() * horizontalMouseSpeed;
       directionalMovement.setRotation(mouseYOffset, mouseXOffset);
-      gameEngine.centerCursor();
     }
   }
 
   private void handleSingleActions(CameraFreeLookAction action) {
     switch (action) {
       case EXIT_GAME:
-        gameEngine.exitGame();
+        gameController.exitGame();
         break;
       case TOGGLE_FULLSCREEN:
-        gameEngine.toggleFullscreen();
+        gameController.toggleFullscreen();
         break;
       case TOGGLE_CURSOR:
-        gameEngine.toggleCursor();
+        gameController.toggleCursor();
         break;
       default:
         break;

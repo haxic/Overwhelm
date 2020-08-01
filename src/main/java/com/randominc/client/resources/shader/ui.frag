@@ -1,9 +1,17 @@
 #version 330
 
+in vec2 outTexCoord;
+
 out vec4 fragment;
 
-uniform vec2 translation;
+uniform sampler2D textureSampler;
+uniform vec4 color;
+uniform int hasTexture;
 
 void main() {
-  fragment = vec4(1.0, 0.0, 0.0, 1.0);
+  if (hasTexture == 1)  {
+    fragment = color * texture(textureSampler, outTexCoord);
+  } else {
+    fragment = color;
+  }
 }

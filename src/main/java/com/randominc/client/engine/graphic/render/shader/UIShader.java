@@ -1,11 +1,14 @@
 package com.randominc.client.engine.graphic.render.shader;
 
 import com.randominc.client.engine.graphic.utility.ShaderProgram;
-import org.joml.Vector2f;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class UIShader extends ShaderProgram {
 
-  private int locationTranslation;
+  private int locationModelMatrix;
+  private int locationColor;
+  private int locationHasTexture;
 
   public UIShader() {
     super(
@@ -15,15 +18,27 @@ public class UIShader extends ShaderProgram {
 
   @Override
   protected void getAllUniformLocations() {
-    locationTranslation = getUniformLocation("translation");
+    locationModelMatrix = getUniformLocation("modelMatrix");
+    locationColor = getUniformLocation("color");
+    locationHasTexture = getUniformLocation("hasTexture");
   }
 
   @Override
   protected void bindAttributes() {
     super.bindAttribute(0, "position");
+    super.bindAttribute(1, "texCoord");
+    super.bindAttribute(2, "normal");
   }
 
-  protected void loadTranslation(Vector2f translation) {
-    super.loadVector2f(locationTranslation, translation);
+  public void loadModelMatrix(Matrix4f modelMatrix) {
+    super.loadMatrixf(locationModelMatrix, modelMatrix);
+  }
+
+  public void loadColor(Vector4f color) {
+    super.loadVector4f(locationColor, color);
+  }
+
+  public void loadHasTexture(boolean hasTexture) {
+    super.loadInt(locationHasTexture, hasTexture ? 1 : 0);
   }
 }

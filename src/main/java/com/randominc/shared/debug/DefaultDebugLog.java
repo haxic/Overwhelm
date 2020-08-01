@@ -6,6 +6,7 @@ public class DefaultDebugLog implements DebugLog {
 
   private final DefaultDebugLogProvider defaultDebugLogProvider;
   private final String className;
+  private boolean enabled = false;
 
   public DefaultDebugLog(DefaultDebugLogProvider defaultDebugLogProvider, String className) {
     this.defaultDebugLogProvider = defaultDebugLogProvider;
@@ -24,6 +25,13 @@ public class DefaultDebugLog implements DebugLog {
 
   @Override
   public void debug(String message) {
+    if (enabled) {
+      defaultDebugLogProvider.debug(className, message);
+    }
+  }
+
+  @Override
+  public void info(String message) {
     defaultDebugLogProvider.debug(className, message);
   }
 

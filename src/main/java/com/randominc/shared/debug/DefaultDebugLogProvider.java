@@ -24,7 +24,8 @@ public class DefaultDebugLogProvider implements DebugLogProvider {
   }
 
   public void debug(String className, String message) {
-    System.out.println(String.format("%s - %s", className, message));
+    className = (className + "                                        ").substring(0, 35);
+    System.out.println(String.format("%s%s", className, message));
   }
 
   public PrintStream getPrintStream() {

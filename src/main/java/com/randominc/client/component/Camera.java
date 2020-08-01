@@ -3,6 +3,7 @@ package com.randominc.client.component;
 import com.randominc.shared.hecs.EntityComponent;
 import java.util.Objects;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class Camera extends EntityComponent {
@@ -64,6 +65,14 @@ public class Camera extends EntityComponent {
     projectionMatrix
         .identity()
         .perspective((float) Math.toRadians(getFov()), aspectRatio, getNear(), getFar());
+  }
+
+  public void updateViewMatrix(Vector3f position, Quaternionf orientation) {
+    viewMatrix.identity();
+    //    viewMatrix.rotate(rotation.x(), Direction.RIGHT);
+    //    viewMatrix.rotate(rotation.y(), Direction.FORWARD);
+    viewMatrix.rotate(orientation);
+    viewMatrix.translate(position);
   }
 
   public void updateViewMatrix(Vector3f position, Vector3f forward, Vector3f up) {

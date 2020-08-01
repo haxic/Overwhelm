@@ -1,8 +1,6 @@
 package com.randominc.client.engine.core;
 
-import org.joml.Vector2f;
-
-public interface GameEngine {
+public interface GameController {
   void toggleFullscreen();
 
   void exitGame();
@@ -16,6 +14,4 @@ public interface GameEngine {
   boolean isCursorShown();
 
   void centerCursor();
-
-  Vector2f getCenter(Vector2f center);
 }

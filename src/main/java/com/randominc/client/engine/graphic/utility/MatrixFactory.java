@@ -1,5 +1,6 @@
 package com.randominc.client.engine.graphic.utility;
 
+import com.randominc.client.component.Direction;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -47,5 +48,13 @@ public class MatrixFactory {
   public static Matrix4f createMVPMatrix(
       Matrix4f projectionMatrix, Matrix4f viewMatrix, Matrix4f modelMatrix) {
     return projectionMatrix.mul(viewMatrix, mvpMatrix).mul(modelMatrix);
+  }
+
+  public static Matrix4f createModelMatrix(Vector3f position, Vector3f scale, float rotation) {
+    tempModelMatrix.identity();
+    tempModelMatrix.translate(position);
+    tempModelMatrix.rotate(rotation, Direction.UP);
+    tempModelMatrix.scale(scale);
+    return tempModelMatrix;
   }
 }

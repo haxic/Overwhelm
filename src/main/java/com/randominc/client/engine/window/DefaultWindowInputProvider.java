@@ -21,7 +21,9 @@ public class DefaultWindowInputProvider implements WindowInputProvider {
   private final Map<Integer, KeyState> scrollYDirections = new HashMap<>();
   private final Map<Integer, KeyState> tempPollMap = new HashMap<>();
   private final Vector2i scrollOffset;
+  private final Vector2i cursorNewPos;
   private final Vector2i cursorPos;
+  private final Vector2i cursorDelta;
 
   private final GLFWKeyCallback keyCallback;
   private final GLFWMouseButtonCallback mouseButtonCallback;
@@ -31,7 +33,9 @@ public class DefaultWindowInputProvider implements WindowInputProvider {
   public DefaultWindowInputProvider(long inputWindow) {
     debugLog = new DefaultDebugLogProvider().getDebugLog(this);
     this.inputWindow = inputWindow;
+    cursorNewPos = new Vector2i();
     cursorPos = new Vector2i();
+    cursorDelta = new Vector2i();
     scrollOffset = new Vector2i();
 
     keyCallback =
@@ -103,7 +107,7 @@ public class DefaultWindowInputProvider implements WindowInputProvider {
           @Override
           public synchronized void invoke(long window, double xpos, double ypos) {
             if (DefaultWindowInputProvider.this.inputWindow == window) {
-              cursorPos.set((int) xpos, (int) ypos);
+              cursorNewPos.set((int) xpos, (int) ypos);
             }
           }
         };
@@ -152,6 +156,20 @@ public class DefaultWindowInputProvider implements WindowInputProvider {
           }
         });
     tempPollMap.forEach(scrollYDirections::put);
+
+    // Update cursor delta
+    cursorNewPos.sub(cursorPos, cursorDelta);
+    // Update cursor pos
+    cursorPos.set(cursorNewPos);
+  }
+
+  public void resetCursor(int x, int y) {
+    cursorPos.set(x, y);
+    cursorNewPos.set(x, y);
+  }
+
+  public void centerCursor(int x, int y) {
+    cursorPos.set(x, y);
   }
 
   public void cleanUp() {
@@ -199,5 +217,10 @@ public class DefaultWindowInputProvider implements WindowInputProvider {
   @Override
   public synchronized Vector2f getCursorPosition(Vector2f destination) {
     return destination.set(cursorPos);
+  }
+
+  @Override
+  public synchronized Vector2f getCursorDelta(Vector2f destination) {
+    return destination.set(cursorDelta);
   }
 }

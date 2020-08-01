@@ -1,35 +1,23 @@
 package com.randominc.client.engine.graphic.model;
 
-import org.joml.Vector3f;
+import com.randominc.client.engine.graphic.texture.Texture;
+import java.util.Objects;
 
 public class Model {
+
+  private Texture texture;
   private Mesh mesh;
-  private boolean hasTransparency;
 
-  private float materialShininess = 5f;
-  private Vector3f materialSpecularColor = new Vector3f(0.5f, 0.5f, 0.5f);
-
-  public Model(Mesh mesh) {
-    this.mesh = mesh;
+  public Model(Mesh mesh, Texture texture) {
+    this.mesh = Objects.requireNonNull(mesh);
+    this.texture = Objects.requireNonNull(texture);
   }
 
   public Mesh getMesh() {
     return mesh;
   }
 
-  public boolean hasTransparency() {
-    return hasTransparency;
-  }
-
-  public void setHasTransparency(boolean hasTransparency) {
-    this.hasTransparency = hasTransparency;
-  }
-
-  public float getShininess() {
-    return materialShininess;
-  }
-
-  public Vector3f getSpecularColor() {
-    return materialSpecularColor;
+  public Texture getTexture() {
+    return texture;
   }
 }

@@ -35,6 +35,8 @@ public abstract class ShaderProgram {
     debugLog = new DefaultDebugLogProvider().getDebugLog(this);
     this.vertexFile = Objects.requireNonNull(vertexFile);
     this.fragmentFile = Objects.requireNonNull(fragmentFile);
+
+    initialize();
   }
 
   public void initialize() {
@@ -52,7 +54,7 @@ public abstract class ShaderProgram {
     GL20.glValidateProgram(programID);
     // Get all uniform locations specified for subclasses.
     getAllUniformLocations();
-    debugLog.debug("Entity shader initialized.");
+    debugLog.info("Entity shader initialized.");
   }
 
   protected abstract void getAllUniformLocations();

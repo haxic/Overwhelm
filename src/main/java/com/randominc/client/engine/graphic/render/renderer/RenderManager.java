@@ -3,6 +3,7 @@ package com.randominc.client.engine.graphic.render.renderer;
 import com.randominc.client.component.Camera;
 import com.randominc.client.component.Direction;
 import com.randominc.client.component.Position;
+import com.randominc.client.data.MeshProvider;
 import com.randominc.client.engine.graphic.render.Scene;
 import com.randominc.shared.debug.DebugLog;
 import com.randominc.shared.debug.DefaultDebugLogProvider;
@@ -15,17 +16,11 @@ public class RenderManager {
   private final TerrainRenderer terrainRenderer;
   private final UIRenderer uiRenderer;
 
-  public RenderManager() {
+  public RenderManager(MeshProvider meshProvider) {
     debugLog = new DefaultDebugLogProvider().getDebugLog(this);
     entityRenderer = new EntityRenderer();
     terrainRenderer = new TerrainRenderer();
-    uiRenderer = new UIRenderer();
-  }
-
-  public void initialize() {
-    entityRenderer.initialize();
-    terrainRenderer.initialize();
-    uiRenderer.initialize();
+    uiRenderer = new UIRenderer(meshProvider);
   }
 
   public void render(Scene scene) {
@@ -47,10 +42,11 @@ public class RenderManager {
 
     entityRenderer.render(
         entityManager,
-        scene.getLightEntities(),
         scene.getEntities(),
         position.getPosition(),
         camera.getProjectionMatrix(),
         camera.getViewMatrix());
+
+    uiRenderer.render(entityManager, scene.getUiElements());
   }
 }

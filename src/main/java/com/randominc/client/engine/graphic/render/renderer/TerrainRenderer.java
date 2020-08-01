@@ -83,10 +83,6 @@ public class TerrainRenderer {
 
   public void cleanUp() {
     // Clean up shader.
-    debugLog.debug("Entity renderer clean up successful.");
-  }
-
-  public void initialize() {
-    terrainShader.initialize();
+    debugLog.info("Entity renderer clean up successful.");
   }
 }

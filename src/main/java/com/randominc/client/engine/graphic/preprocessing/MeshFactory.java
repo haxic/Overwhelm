@@ -133,7 +133,7 @@ public class MeshFactory {
     vboIdReferences.remove(vaoId);
     GL30.glDeleteVertexArrays(vaoId);
     vaoIds.remove(vaoId);
-    debugLog.debug(String.format("Mesh removed. VaoId=[%d], VboIds=[%s]", vaoId, debugVboList));
+    debugLog.info(String.format("Mesh removed. VaoId=[%d], VboIds=[%s]", vaoId, debugVboList));
   }
 
   public void cleanUp() {
@@ -152,7 +152,7 @@ public class MeshFactory {
               vbosCounted, vboIds.size()));
 
     } else {
-      debugLog.debug("Mesh clean up successful.");
+      debugLog.info("Mesh clean up successful.");
     }
   }
 }

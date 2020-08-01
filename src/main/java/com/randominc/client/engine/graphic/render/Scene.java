@@ -20,12 +20,13 @@ public class Scene implements EntityContainer {
 
   private final DebugLog debugLog;
   private List<Entity> lights;
-  private Map<Model, List<Entity>> actors;
+  private Map<Model, List<Entity>> entities;
   private Model skybox;
   //  private ParticleManager particleManager;
   private final EntityManager entityManager;
   private Entity cameraEntity;
   private List<Terrain> terrains;
+  private Map<Model, List<Entity>> uiElements;
 
   public Scene(EntityManager entityManager, Entity cameraEntity) {
     debugLog = new DefaultDebugLogProvider().getDebugLog(this);
@@ -38,42 +39,14 @@ public class Scene implements EntityContainer {
     if (position == null || camera == null) {
       debugLog.error(
           String.format(
-              "Created scene with a camera entity that is missing necessary component: [WorldObjectComponent=%s, CameraComponent=%S].",
+              "Created scene with a camera entity that is missing necessary component: [WorldObjectComponent='%s', CameraComponent='%s'].",
               position, camera));
     }
 
     lights = new ArrayList<>();
-    actors = new HashMap<>();
+    uiElements = new HashMap<>();
+    entities = new HashMap<>();
     cameraEntity.attach(this);
-    //    particleManager = new ParticleManager(entityManager);
-  }
-
-  //  public void update(float dt) {
-  //    particleManager.update(camera, dt);
-  //  }
-
-  //  public void addParticleEntity(Entity entity) {
-  //    particleManager.addEntity(entity);
-  //  }
-
-  //  public void removeParticleEntity(Entity entity) {
-  //    particleManager.removeEntity(entity);
-  //  }
-
-  public void addLightEntity(Entity entity) {
-    Objects.requireNonNull(entity);
-    entity.attach(this);
-    lights.add(entity);
-  }
-
-  public void removeLightEntity(Entity entity) {
-    Objects.requireNonNull(entity);
-    lights.remove(entity);
-    entity.detach(this);
-  }
-
-  public void setSkybox(Model skybox) {
-    this.skybox = Objects.requireNonNull(skybox);
   }
 
   public void addTerrain(Terrain terrain) {
@@ -84,20 +57,31 @@ public class Scene implements EntityContainer {
     Objects.requireNonNull(entity);
     Actor actor = (Actor) entityManager.getComponent(entity, Actor.class);
     Model model = actor.getModel();
-    List<Entity> batch = actors.get(model);
+    List<Entity> batch = entities.get(model);
     if (batch != null) {
       batch.add(entity);
     } else {
       List<Entity> newBatch = new ArrayList<>();
       newBatch.add(entity);
-      actors.put(model, newBatch);
+      entities.put(model, newBatch);
     }
     entity.attach(this);
   }
 
-  public void removeActorEntity(Entity entity) {
-    detach(entity);
-    entity.detach(this);
+  public void addUIElement(Entity entity) {
+    Objects.requireNonNull(entity);
+    Actor actor = (Actor) entityManager.getComponent(entity, Actor.class);
+    Objects.requireNonNull(actor);
+    Model model = actor.getModel();
+    List<Entity> batch = uiElements.get(model);
+    if (batch != null) {
+      batch.add(entity);
+    } else {
+      List<Entity> newBatch = new ArrayList<>();
+      newBatch.add(entity);
+      uiElements.put(model, newBatch);
+    }
+    entity.attach(this);
   }
 
   @Override
@@ -106,7 +90,7 @@ public class Scene implements EntityContainer {
     Actor actor = (Actor) entityManager.getComponent(entity, Actor.class);
     if (actor != null) {
       Model model = actor.getModel();
-      List<Entity> batch = actors.get(model);
+      List<Entity> batch = entities.get(model);
       if (batch == null || batch != null && !batch.contains(entity)) {
         System.out.println(
             "WARNING: trying to remove an entity that isn't in the rendering list! Entity id: "
@@ -115,7 +99,7 @@ public class Scene implements EntityContainer {
         return;
       }
       batch.remove(entity);
-      if (batch.isEmpty()) actors.remove(model);
+      if (batch.isEmpty()) entities.remove(model);
     }
     Light light = (Light) entityManager.getComponent(entity, Light.class);
     if (light != null) {
@@ -127,21 +111,13 @@ public class Scene implements EntityContainer {
     return cameraEntity;
   }
 
-  public List<Entity> getLightEntities() {
-    return lights;
+  public Map<Model, List<Entity>> getUiElements() {
+    return uiElements;
   }
 
   public Map<Model, List<Entity>> getEntities() {
-    return actors;
+    return entities;
   }
-
-  public Model getSkybox() {
-    return skybox;
-  }
-
-  //  public ParticleManager getParticleManager() {
-  //    return particleManager;
-  //  }
 
   public List<Terrain> getTerrain() {
     return terrains;

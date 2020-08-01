@@ -29,6 +29,7 @@ public class Window {
   private boolean isResized;
   private boolean isFullscreen;
   private boolean isCursorShown;
+  private boolean ready;
 
   public Window(String title, int width, int height) {
     this.debugLog = new DefaultDebugLogProvider().getDebugLog(this);
@@ -84,6 +85,7 @@ public class Window {
     GL.createCapabilities();
     GL11.glEnable(GL11.GL_DEPTH_TEST);
     GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    ready = true;
   }
 
   private void setWindowCallbacks() {
@@ -120,7 +122,7 @@ public class Window {
     defaultWindowInputProvider.update();
     GLFW.glfwPollEvents();
     if (!isCursorShown()) {
-      GLFW.glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
+      centerCursor();
     }
   }
 
@@ -149,7 +151,7 @@ public class Window {
     GLFW.glfwDestroyWindow(window);
     GLFW.glfwTerminate();
     GLFW.glfwSetErrorCallback(null).free();
-    debugLog.debug("Window clean up successful.");
+    debugLog.info("Window clean up successful.");
   }
 
   public WindowInputProvider getInputProvider() {
@@ -181,7 +183,8 @@ public class Window {
   }
 
   public void hideCursor() {
-    GLFW.glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
+    centerCursor();
+    defaultWindowInputProvider.resetCursor(width / 2, height / 2);
     GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     isCursorShown = false;
   }
@@ -200,9 +203,14 @@ public class Window {
 
   public void centerCursor() {
     GLFW.glfwSetCursorPos(window, width / 2.0f, height / 2.0f);
+    defaultWindowInputProvider.centerCursor(width / 2, height / 2);
   }
 
   public Vector2f getCenter(Vector2f destination) {
     return destination.set(width / 2.0f, height / 2.0f);
+  }
+
+  public boolean isReadyToRender() {
+    return ready;
   }
 }

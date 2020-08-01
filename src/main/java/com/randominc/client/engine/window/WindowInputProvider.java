@@ -11,4 +11,6 @@ public interface WindowInputProvider {
   KeyState getScrollYDirection(int binding);
 
   Vector2f getCursorPosition(Vector2f destination);
+
+  Vector2f getCursorDelta(Vector2f destination);
 }
